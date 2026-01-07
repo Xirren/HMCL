@@ -27,7 +27,7 @@ import org.jackhuang.hmcl.util.i18n.I18n;
 import org.jackhuang.hmcl.util.i18n.LocaleUtils;
 import org.jackhuang.hmcl.util.io.ResponseCodeException;
 
-import javax.net.ssl.SSLHandshakeException;
+import javax.net.ssl.SSLException;
 import java.io.FileNotFoundException;
 import java.net.SocketTimeoutException;
 import java.net.URI;
@@ -134,8 +134,16 @@ public final class DownloadProviders {
                 return i18n("install.failed.downloading.detail", uri) + "\n" + i18n("exception.access_denied", ((AccessDeniedException) exception.getCause()).getFile());
             } else if (exception.getCause() instanceof ArtifactMalformedException) {
                 return i18n("install.failed.downloading.detail", uri) + "\n" + i18n("exception.artifact_malformed");
-            } else if (exception.getCause() instanceof SSLHandshakeException) {
-                return i18n("install.failed.downloading.detail", uri) + "\n" + i18n("exception.ssl_handshake");
+            } else if (exception.getCause() instanceof SSLException) {
+                String message = exception.getCause().getMessage();
+                if (message != null) {
+                    if (message.contains("Remote host terminated")) {
+                        return i18n("install.failed.downloading.detail", uri) + "\n" + "account.failed.connect_authentication_server";
+                    } else if (message.contains("No name matching") || message.contains("No subject alternative DNS name matching")) {
+                        return i18n("install.failed.downloading.detail", uri) + "\n" + "account.failed.dns";
+                    }
+                }
+                return i18n("install.failed.downloading.detail", uri) + "\n" + "account.failed.ssl";
             } else {
                 return i18n("install.failed.downloading.detail", uri) + "\n" + StringUtils.getStackTrace(exception.getCause());
             }

@@ -164,11 +164,13 @@ public final class AddAuthlibInjectorServerPane extends TransitionPane implement
 
     private String resolveFetchExceptionMessage(Throwable exception) {
         if (exception instanceof SSLException) {
-            if (exception.getMessage() != null && exception.getMessage().contains("Remote host terminated")) {
-                return i18n("account.failed.connect_injector_server");
-            }
-            if (exception.getMessage() != null && exception.getMessage().contains("No name matching") || exception.getMessage().contains("No subject alternative DNS name matching")) {
-                return i18n("account.failed.dns");
+            String message = exception.getCause().getMessage();
+            if (message != null) {
+                if (message.contains("Remote host terminated")) {
+                    return i18n("account.failed.connect_authentication_server");
+                } else if (message.contains("No name matching") || message.contains("No subject alternative DNS name matching")) {
+                    return i18n("account.failed.dns");
+                }
             }
             return i18n("account.failed.ssl");
         } else if (exception instanceof IOException) {
