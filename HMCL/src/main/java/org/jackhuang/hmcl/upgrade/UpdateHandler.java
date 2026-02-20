@@ -21,8 +21,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 import javafx.application.Platform;
 
-import org.jackhuang.hmcl.EntryPoint;
 import org.jackhuang.hmcl.Main;
+import org.jackhuang.hmcl.Launcher;
 import org.jackhuang.hmcl.Metadata;
 import org.jackhuang.hmcl.task.Task;
 import org.jackhuang.hmcl.task.TaskExecutor;
@@ -125,7 +125,7 @@ public final class UpdateHandler {
                         }
 
                         requestUpdate(downloaded, getCurrentLocation());
-                        EntryPoint.exit(0);
+                        Launcher.stopApplication();
                     } catch (IOException e) {
                         LOG.warning("Failed to update to " + version, e);
                         Platform.runLater(() -> Controllers.dialog(StringUtils.getStackTrace(e), i18n("update.failed"), MessageType.ERROR));
